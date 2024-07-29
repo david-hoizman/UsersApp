@@ -9,7 +9,7 @@ import User from './components/user';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>kfefedjsdfj</Text>
+      {/* <Text>kfefedjsdfj</Text> */}
       <User/>
     </View>
   );
