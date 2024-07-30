@@ -10,10 +10,9 @@ import User from './components/user';
 export default function App() {
   return (
     <View style={styles.container}>    
-        
       
       <User/>
-      
+
     </View>
   );
 }
