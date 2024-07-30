@@ -14,8 +14,8 @@ export default function User() {
   const [userToDelete, setUserToDelete] = useState(null);
   const [users, setUsers] = useState(data)
 
-    const onBtnPress = (user) => {
-        setUserToDelete(user)
+    const onBtnPress = async (index) => {
+        setUserToDelete(index)
         setIsShow(true)
 
     }
@@ -26,10 +26,12 @@ export default function User() {
       setUsers(temp)
     }
     const onBtnDeletePress=()=>{
-      if (userToDelete != null){
-        // d = [...data]
-        // d.filter(element => element !== userToDelete)
-        // setData(d)
+      if (userToDelete !== null){
+        let d = users.filter((_, index) => index !== userToDelete)
+        setUsers(d)
+        setUserToDelete(null) 
+        setIsShow(false)
+
       }
 
 
@@ -37,9 +39,9 @@ export default function User() {
   
   
   
-  users_display = []
+  
   const addRow = (user, index) => {
-    users_display.push(
+    return(
       <View  key={index} style={styles.row}>
         <Text style={[styles.text, {width: "13%"}]}>{user.firstName}</Text>
         <Text style={[styles.text, {width: "13%"}]}>{user.lastName}</Text>
@@ -60,7 +62,7 @@ export default function User() {
                 </Pressable>
             </View>
           </Modal>
-            <Pressable onPress={()=>onBtnPress(user)} style={(data) => [data.pressed && {opacity:0.5}, styles.imgBtn]}>
+            <Pressable onPress={()=>onBtnPress(index)} style={(data) => [data.pressed && {opacity:0.5}, styles.imgBtn]}>
               <Image_  >
 
             </Image_ >
@@ -68,8 +70,8 @@ export default function User() {
         </View>
       </View>
     );
-}
-  users.forEach(addRow);
+  }
+  users_display = users.map(addRow);
 
   return (
     <View style={styles.container} >

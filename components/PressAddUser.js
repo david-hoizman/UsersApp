@@ -7,10 +7,7 @@ export default function PressView({addUser}) {
     const onBtnPress = () => {
         setIsShow(true)
     }
-    // const [isShow1, setIsShow1] = useState(false);
-    // const onBtnPress1 = () => {
-    //     setIsShow1(true)
-    // }
+    
 
   const [inputVal1, setInputVal1] = useState("")
   const [condition1, setCondition1] = useState("")
@@ -54,35 +51,12 @@ export default function PressView({addUser}) {
         return
       }
 
-
-      // this.firstName = firstName;
-      // this.lastName = lastName;
-      // this.phonNumber = phonNumber;
-      // this.email = email;
-      // this.role = role;
-
       addUser({"firstName": inputVal1, "lastName": inputVal2, "email": inputVal3, "phonNumber": inputVal4, "role": inputVal5})
       setIsShow(false)
       
       // alert("invalid")
-
     }
-    // const onBtnPres1 = () => {
-    //   alert(inputVal1)
-
-    // }
-    // const onBtnPress1 = () => {
-    //   alert(inputVal1)
-
-    // }
-    // const onBtnPress1 = () => {
-    //   alert(inputVal1)
-
-    // }
-    // const onBtnPress1 = () => {
-      // alert(inputVal1)
-
-    // }
+    
     
   return (
     
@@ -129,7 +103,7 @@ export default function PressView({addUser}) {
 
                 </View>
                 <View style={{width:"100%"}}>
-                  <Button onPress={onBtnPress1} title='send'color={"red"}>
+                  <Button onPress={onBtnPress1} title='send'color={"blue"}>
                   </Button>
                 </View>
                 
