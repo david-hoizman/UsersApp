@@ -54,27 +54,24 @@ export default function PressView({addUser}) {
       addUser({"firstName": inputVal1, "lastName": inputVal2, "email": inputVal3, "phonNumber": inputVal4, "role": inputVal5})
       setIsShow(false)
       
-      // alert("invalid")
     }
     
     
   return (
     
     <>
-      {/* <Modal visible={isShow} animationType='fade' transparent={true}> */}
-        
-            <Text></Text>
-            {/* <Pressable onPress={() => {
-                setIsShow(false)
-            }} style={(data) => [styles.btn, {backgroundColor:"orange"}, data.pressed && {opacity:0.5}]}> */}
-                {/* <Text style={styles.btnText}>Hide</Text> */}
+      
       <Modal visible={isShow} animationType='fade' transparent={true}>
-      <View style={styles.container}>
+      <View style={{height:"600px", width:"68%", backgroundColor: "skyblue",
+       marginTop:"24%", marginLeft:"16%", borderWidth:4, borderColor:"#1f7690"}}>
+      <View>
         
 
                 <Text></Text>
-                <View style={{width:"100%", marginVertical:16}}>
-                  
+                <View style={{width:"100%"}}>
+                  <View >
+                  <Text style={{marginBottom:24, fontSize:13.8, textAlign:"center", fontWeight: '900',}}>Personal Details Form</Text>
+                  </View>
                   
                   
                   <TextInput onChangeText={setInputVal1} style={styles.inputText}/>
@@ -97,24 +94,30 @@ export default function PressView({addUser}) {
                   <View>
                     <Text style={{fontSize:14}}>{condition5}</Text>
                   </View>
-                  
+                  <View style={{backgroundColor:"skyblue"}}>
+                  <Button onPress={onBtnPress1} title='save'color={"blue"}>
+                  </Button>
 
                   
 
                 </View>
-                <View style={{width:"100%"}}>
-                  <Button onPress={onBtnPress1} title='send'color={"blue"}>
-                  </Button>
+                {/* <View style={{width:"100%"}}>
+                  <Button onPress={onBtnPress1} title='save'color={"blue"}>
+                  </Button> */}
                 </View>
                 
             {/* </Pressable> */}
         </View>
+      </View>
       </Modal>
+   
+      
     
-      <Pressable onPress={onBtnPress} style={(data) => [styles.btn,data.pressed && {opacity:0.5}]}>
+      {!isShow && <Pressable onPress={onBtnPress} style={(data) => [styles.btn,data.pressed && {opacity:1}]}>
           <Text style={styles.btnText}>add user</Text>
  
-      </Pressable>
+      </Pressable>}
+   
     </>
   )
 }
@@ -123,27 +126,42 @@ const styles = StyleSheet.create({
     container: {
         flex: 1, 
         // backgroundColor: "rgba(255,255,255,0.7)",
-        backgroundColor: "silver",
-        alignItems: 'center', 
+        backgroundColor: "skyblue",
+        // alignItems: 'center', 
+        width:"66%",
+        // margin:6
+        
+        // alignItems: 'center', 
         // justifyContent: 'center', 
+       paddingTop:"40%",
+        height:"60%"
+        // alignItems: 'center', 
 
       },
     inputText: {
       height:40, 
       borderWidth:1, 
       backgroundColor:"white",
-      paddingHorizontal:8
+      paddingHorizontal:8,
+      borderWidth:2,
+      marginVertical:2.9,
+      borderRadius:6,
+      fontSize:14
 
     },
     btn: {
         backgroundColor: "skyblue",
-        borderWidth: 2,
-        width: "70%",
-        padding: 16
+        borderWidth: 1,
+        borderColor:"#ed92b8",
+        width:394,
+        padding: 10,
+        
+        borderRadius:6
 
     },
     btnText: {
         fontSize: 24,
-        textAlign: "center"
+        textAlign: "center",
+        
     }
 })

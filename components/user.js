@@ -1,13 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Modal, Pressable, ScrollView } from 'react-native';
 import data from '../.expo/data';
 import Image_ from './Image';
 import { useState } from 'react'
 import PressView from './PressAddUser';
 
 
-{/* <Pressable onPress={onBtnPress} style={(data) => [styles.btn,data.pressed && {opacity:0.5}]}></Pressable>
-</Pressable> */}
 
 export default function User() {
   const [isShow, setIsShow] = useState(false);
@@ -42,7 +40,9 @@ export default function User() {
   
   const addRow = (user, index) => {
     return(
+      
       <View  key={index} style={styles.row}>
+        
         <Text style={[styles.text, {width: "13%"}]}>{user.firstName}</Text>
         <Text style={[styles.text, {width: "13%"}]}>{user.lastName}</Text>
         <Text style={[styles.text, {width: "26%"}]}>{user.email}</Text>
@@ -50,6 +50,7 @@ export default function User() {
         <Text style={[styles.text, {width: "13%"}]}>{user.role}</Text>
         <View style={[styles.text, {width: "13%"}]}>
           <Modal visible={isShow} animationType='fade' transparent={true}>
+          <ScrollView>
             <View style={styles.container}>
                 <Text style={styles.delete_warning}>Are you sure you want to delete?</Text>
                 <Pressable onPress={() => {
@@ -61,6 +62,7 @@ export default function User() {
                   </View>
                 </Pressable>
             </View>
+            </ScrollView>
           </Modal>
             <Pressable onPress={()=>onBtnPress(index)} style={(data) => [data.pressed && {opacity:0.5}, styles.imgBtn]}>
               <Image_  >
@@ -69,11 +71,13 @@ export default function User() {
             </Pressable>
         </View>
       </View>
+      
     );
   }
   users_display = users.map(addRow);
 
   return (
+    
     <View style={styles.container} >
       <View style={styles.header}>
         <Text style={[styles.textheader, {width: "13%"}]}>First Name</Text>
@@ -84,12 +88,13 @@ export default function User() {
         <Text style={[styles.textheader, {width: "13%"}]}></Text>
       </View>
       
-    
+      <ScrollView>
       {users_display}
+      </ScrollView>
       <PressView addUser={addUser}/>
-      {/* {PressView({"addUser":addUser})} */}
 
     </View>
+    
   );
 }
 
@@ -137,7 +142,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: 'black',
     backgroundColor: '#dae9e7',
-  // color:"white"
   },
   row: {
     flexDirection: "row",
@@ -161,6 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop:33
   },
   delete_window_btns:{
     flexDirection: "row",
