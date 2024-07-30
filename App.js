@@ -2,7 +2,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import User from './components/user';
-import PressView from './components/PressView';
 
 
 
@@ -14,7 +13,7 @@ export default function App() {
         
       
       <User/>
-      <PressView/>
+      
     </View>
   );
 }

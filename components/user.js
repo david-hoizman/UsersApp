@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, Modal, Pressable } from 'react-native';
 import data from '../.expo/data';
 import Image_ from './Image';
 import { useState } from 'react'
+import PressView from './PressAddUser';
+
 
 {/* <Pressable onPress={onBtnPress} style={(data) => [styles.btn,data.pressed && {opacity:0.5}]}></Pressable>
 </Pressable> */}
@@ -10,6 +12,7 @@ import { useState } from 'react'
 export default function User() {
   const [isShow, setIsShow] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [users, setUsers] = useState(data)
 
     const onBtnPress = (user) => {
         setUserToDelete(user)
@@ -17,6 +20,11 @@ export default function User() {
 
     }
 
+    const addUser = (user)=>{
+      const temp = [...users]
+      temp.push(user)
+      setUsers(temp)
+    }
     const onBtnDeletePress=()=>{
       if (userToDelete != null){
         // d = [...data]
@@ -61,7 +69,7 @@ export default function User() {
       </View>
     );
 }
-  data.forEach(addRow);
+  users.forEach(addRow);
 
   return (
     <View style={styles.container} >
@@ -73,8 +81,12 @@ export default function User() {
         <Text style={[styles.textheader, {width: "13%"}]}>Role</Text>
         <Text style={[styles.textheader, {width: "13%"}]}></Text>
       </View>
+      
     
       {users_display}
+      <PressView addUser={addUser}/>
+      {/* {PressView({"addUser":addUser})} */}
+
     </View>
   );
 }
