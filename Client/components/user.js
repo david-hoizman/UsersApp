@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Modal, Pressable, ScrollView } from 'react-native';
 import PressView from './PressAddUser';
 import Image_ from './Image';
-// import {API_URL} from "../services/userService"
+import {API_URL} from '../services/userService'
 
 export default function User() {
   const [isShow, setIsShow] = useState(false);
@@ -17,7 +17,7 @@ export default function User() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`http://192.168.1.22:3000/users`);
+      const response = await fetch(API_URL);
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
@@ -30,7 +30,7 @@ export default function User() {
 
   const deleteUser = async (id) => {
     try {
-      const response = await fetch(`http://192.168.1.22:3000/users/${id}`, {
+      const response = await fetch(`${API_URL}/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

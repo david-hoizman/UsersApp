@@ -2,7 +2,7 @@
 import { Button, TextInput, Modal, Pressable, StyleSheet, Text, View, Alert, response } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios for HTTP requests
-// import {API_URL} from "../services/userService"
+import {API_URL} from "../services/userService"
 // const API_URL = 'http://192.168.1.22:3000/users'; // Change this to your server's URL
 
 export default function PressView({ addUser, navigation }) {
@@ -74,7 +74,7 @@ export default function PressView({ addUser, navigation }) {
         }); // הדפסת הנתונים לפני שליחה
     
         try {
-            const response = await axios.post(`http://192.168.1.22:3000/users`, {
+            const response = await axios.post(API_URL, {
                 firstName: inputVal1,
                 lastName: inputVal2,
                 email: inputVal3,
