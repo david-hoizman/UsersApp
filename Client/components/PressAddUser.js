@@ -1,9 +1,12 @@
-import { Button, TextInput, Modal, Pressable, StyleSheet, Text, View, Alert } from 'react-native';
+
+import { Button, TextInput, Modal, Pressable, StyleSheet, Text, View, Alert, response } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import axios for HTTP requests
+// import {API_URL} from "../services/userService"
+// const API_URL = 'http://192.168.1.22:3000/users'; // Change this to your server's URL
 
 export default function PressView({ addUser, navigation }) {
     const [isShow, setIsShow] = useState(false);
-
     const [inputVal1, setInputVal1] = useState("");
     const [condition1, setCondition1] = useState("");
     const [inputVal2, setInputVal2] = useState("");
@@ -15,7 +18,6 @@ export default function PressView({ addUser, navigation }) {
     const [inputVal5, setInputVal5] = useState("");
     const [condition5, setCondition5] = useState("");
 
-    // Validation functions
     const validateFirstName = (value) => {
         if (!value) return "First name is required";
         if (/\d/.test(value)) return "Name should not contain numbers";
@@ -46,8 +48,7 @@ export default function PressView({ addUser, navigation }) {
         return "";
     };
 
-    const onBtnPress1 = () => {
-        // Validate fields
+    const handleAddUser = async () => {
         const error1 = validateFirstName(inputVal1);
         const error2 = validateLastName(inputVal2);
         const error3 = validateEmail(inputVal3);
@@ -60,24 +61,34 @@ export default function PressView({ addUser, navigation }) {
         setCondition4(error4);
         setCondition5(error5);
 
-        // Check if any validation failed
         if (error1 || error2 || error3 || error4 || error5) {
             Alert.alert("Validation Error", "Please correct the highlighted fields.");
             return;
         }
-
-        // All validations passed, proceed with adding the user
-        addUser({
-            "firstName": inputVal1,
-            "lastName": inputVal2,
-            "email": inputVal3,
-            "phoneNumber": inputVal4,
-            "role": inputVal5
-        });
-
-        // Clear fields and close the modal
-        handleClear();
-        setIsShow(false);
+        console.log('Sending data:', {
+            firstName: inputVal1,
+            lastName: inputVal2,
+            email: inputVal3,
+            phoneNumber: inputVal4,
+            role: inputVal5
+        }); // הדפסת הנתונים לפני שליחה
+    
+        try {
+            const response = await axios.post(`http://192.168.1.22:3000/users`, {
+                firstName: inputVal1,
+                lastName: inputVal2,
+                email: inputVal3,
+                phoneNumber: inputVal4,
+                role: inputVal5
+            });
+            if (response.status == 201) {
+                addUser(response.data);
+                handleClear();
+                setIsShow(false);
+            }
+        } catch (error) {
+            Alert.alert("Error", "Failed to add user. Please try again11.");
+        }
     };
 
     const handleCancel = () => {
@@ -100,7 +111,6 @@ export default function PressView({ addUser, navigation }) {
         setCondition5("");
     };
 
-    // Clear fields when modal is closed
     useEffect(() => {
         if (!isShow) {
             handleClear();
@@ -169,7 +179,7 @@ export default function PressView({ addUser, navigation }) {
                                     <Text style={styles.buttonText}>Clear</Text>
                                 </Pressable>
                             </View>
-                            <Pressable style={styles.saveButton} onPress={onBtnPress1}>
+                            <Pressable style={styles.saveButton} onPress={handleAddUser}>
                                 <Text style={styles.buttonText}>Save</Text>
                             </Pressable>
                         </View>
@@ -277,14 +287,11 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 4,
-        elevation: 4,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 10
+        elevation: 2
     },
     btnText: {
         color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold'
+        fontSize: 16
     }
 });
+

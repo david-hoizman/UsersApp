@@ -1,30 +1,78 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Modal, Pressable, ScrollView } from 'react-native';
-import data from '../.expo/data';
-import Image_ from './Image';
-import { useState } from 'react';
 import PressView from './PressAddUser';
+import Image_ from './Image';
+// import {API_URL} from "../services/userService"
 
 export default function User() {
   const [isShow, setIsShow] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-  const [users, setUsers] = useState(data);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    // Fetch users from server when component mounts
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(`http://192.168.1.22:3000/users`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  const deleteUser = async (id) => {
+    try {
+      const response = await fetch(`http://192.168.1.22:3000/users/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+      // Refresh the user list after deletion
+      fetchUsers();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
 
   const onBtnPress = async (index) => {
     setUserToDelete(index);
     setIsShow(true);
   };
 
-  const addUser = (user) => {
-    const temp = [...users];
-    temp.push(user);
-    setUsers(temp);
+  const addUser = async (user) => {
+    try {
+      // const response = await fetch(`http://192.168.1.22:3000/users`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(user),
+      // });
+    
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to add user');
+      // }
+
+      // Refresh the user list after adding
+      fetchUsers();
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
   };
 
   const onBtnDeletePress = () => {
     if (userToDelete !== null) {
-      let d = users.filter((_, index) => index !== userToDelete);
-      setUsers(d);
+      deleteUser(users[userToDelete].id);
       setUserToDelete(null);
       setIsShow(false);
     }
@@ -36,7 +84,7 @@ export default function User() {
         <Text style={[styles.text, { width: "13%" }]}>{user.firstName}</Text>
         <Text style={[styles.text, { width: "13%" }]}>{user.lastName}</Text>
         <Text style={[styles.text, { width: "26%" }]}>{user.email}</Text>
-        <Text style={[styles.text, { width: "22%" }]}>{user.phonNumber}</Text>
+        <Text style={[styles.text, { width: "22%" }]}>{user.phoneNumber}</Text>
         <Text style={[styles.text, { width: "13%" }]}>{user.role}</Text>
         <View style={[styles.text, { width: "13%" }]}>
           <Modal visible={isShow} animationType='fade' transparent={true}>
@@ -55,8 +103,9 @@ export default function User() {
             </View>
           </Modal>
           <Pressable onPress={() => onBtnPress(index)} style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.imgBtn]}>
+            {/* <Text>Delet</Text> */}
             <Image_>
-            </Image_>
+//          </Image_>
           </Pressable>
         </View>
       </View>
@@ -176,7 +225,3 @@ const styles = StyleSheet.create({
     paddingTop: 33,
   },
 });
-
-
-
-
