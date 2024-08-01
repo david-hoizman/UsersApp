@@ -1,13 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Modal, Pressable, ScrollView } from 'react-native';
 import PressView from './PressAddUser';
-import Image_ from './Image';
-import {API_URL} from '../services/userService'
+import Image_ from './ImageDel';
+import { API_URL } from '../services/userService';
+import Image__ from './ImageDet';
 
 export default function User() {
   const [isShow, setIsShow] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [detailsVisible, setDetailsVisible] = useState(null); // To track which user's details are visible
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -43,28 +44,15 @@ export default function User() {
     }
   };
 
-  const onBtnPress = async (index) => {
+  const onBtnPress = (index) => {
     setUserToDelete(index);
     setIsShow(true);
   };
 
   const addUser = async (user) => {
     try {
-      // const response = await fetch(`http://192.168.1.22:3000/users`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(user),
-      // });
-    
-
-      // if (!response.ok) {
-      //   throw new Error('Failed to add user');
-      // }
-
-      // Refresh the user list after adding
-      fetchUsers();
+      // Add user logic here
+      fetchUsers(); // Refresh user list
     } catch (error) {
       console.error('Error adding user:', error);
     }
@@ -78,36 +66,58 @@ export default function User() {
     }
   };
 
+  const showDetails = (user) => {
+    setDetailsVisible(user);
+  };
+
+  const hideDetails = () => {
+    setDetailsVisible(null);
+  };
+
   const addRow = (user, index) => {
     return (
       <View key={index} style={styles.row}>
-        <Text style={[styles.text, { width: "13%" }]}>{user.firstName}</Text>
-        <Text style={[styles.text, { width: "13%" }]}>{user.lastName}</Text>
-        <Text style={[styles.text, { width: "26%" }]}>{user.email}</Text>
-        <Text style={[styles.text, { width: "22%" }]}>{user.phoneNumber}</Text>
-        <Text style={[styles.text, { width: "13%" }]}>{user.role}</Text>
-        <View style={[styles.text, { width: "13%" }]}>
-          <Modal visible={isShow} animationType='fade' transparent={true}>
+        <Pressable style={({ pressed }) => [styles.text, { width: "13%" }, pressed && { opacity: 0.5 }]}>
+          <Text>{user.firstName}</Text>
+        </Pressable>
+        <Pressable style={({ pressed }) => [styles.text, { width: "13%" }, pressed && { opacity: 0.5 }]}>
+          <Text>{user.lastName}</Text>
+        </Pressable>
+        <Pressable style={({ pressed }) => [styles.text, { width: "26%" }, pressed && { opacity: 0.5 }]}>
+          <Text>{user.email}</Text>
+        </Pressable>
+        <Pressable style={({ pressed }) => [styles.text, { width: "22%" }, pressed && { opacity: 0.5 }]}>
+          <Text>{user.phoneNumber}</Text>
+        </Pressable>
+        <Pressable style={({ pressed }) => [styles.text, { width: "13%" }, pressed && { opacity: 0.5 }]}>
+          <Text>{user.role}</Text>
+        </Pressable>
+        <View style={styles.actionButtons}>
+          <Pressable onPress={() => showDetails(user)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
+            {/* <Text style={styles.detailsText}>D</Text> */}
+            <Image__ />
+          </Pressable>
+          <Pressable onPress={() => onBtnPress(index)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
+            <Image_ />
+          </Pressable>
+        </View>
+        {detailsVisible === user && (
+          <Modal visible={true} animationType='fade' transparent={true}>
             <View style={styles.modalOverlay}>
               <View style={styles.modalContainer}>
-                <Text style={styles.deleteWarning}>Are you sure you want to delete?</Text>
-                <View style={styles.modalButtonContainer}>
-                  <Pressable onPress={onBtnDeletePress} style={styles.modalButton}>
-                    <Text style={[styles.modalButtonText, {color: 'white'}]}>Yes, I'm sure</Text>
-                  </Pressable>
-                  <Pressable onPress={() => setIsShow(false)} style={styles.modalButtonCancel}>
-                    <Text style={styles.modalButtonText}>Cancel</Text>
-                  </Pressable>
-                </View>
+                <Text style={styles.deleteWarning}>Details:</Text>
+                <Text style={styles.detailsText}>First Name: {user.firstName}</Text>
+                <Text style={styles.detailsText}>Last Name: {user.lastName}</Text>
+                <Text style={styles.detailsText}>Email: {user.email}</Text>
+                <Text style={styles.detailsText}>Phone Number: {user.phoneNumber}</Text>
+                <Text style={styles.detailsText}>Role: {user.role}</Text>
+                <Pressable onPress={hideDetails} style={styles.modalButtonCancel}>
+                  <Text style={styles.modalButtonText}>Close</Text>
+                </Pressable>
               </View>
             </View>
           </Modal>
-          <Pressable onPress={() => onBtnPress(index)} style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.imgBtn]}>
-            {/* <Text>Delet</Text> */}
-            <Image_>
-//          </Image_>
-          </Pressable>
-        </View>
+        )}
       </View>
     );
   };
@@ -122,13 +132,30 @@ export default function User() {
         <Text style={[styles.textheader, { width: "26%" }]}>Email</Text>
         <Text style={[styles.textheader, { width: "22%" }]}>Phone Number</Text>
         <Text style={[styles.textheader, { width: "13%" }]}>Role</Text>
-        <Text style={[styles.textheader, { width: "13%" }]}></Text>
+        <Text style={[styles.textheader, { width: "13%" }]}>Action</Text>
       </View>
 
       <ScrollView>
         {users_display}
       </ScrollView>
       <PressView addUser={addUser} />
+
+      {/* Confirmation Modal */}
+      <Modal visible={isShow} animationType='fade' transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.deleteWarning}>Are you sure you want to delete this user?</Text>
+            <View style={styles.modalButtonContainer}>
+              <Pressable onPress={onBtnDeletePress} style={styles.modalButton}>
+                <Text style={[styles.modalButtonText, { color: 'white' }]}>Yes, I'm sure</Text>
+              </Pressable>
+              <Pressable onPress={() => setIsShow(false)} style={styles.modalButtonCancel}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -143,7 +170,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent', // Keep the background transparent
+    backgroundColor: 'rgba(0,0,0,0.5)', // Dimmed background
   },
   modalContainer: {
     width: '80%',
@@ -187,34 +214,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   imgBtn: {
-    width: "66%",
+    flex: 1, // Adjusts the button to take up the remaining space in its container
     height: 40,
-    marginLeft: 5,
+  },
+  detailsBtn: {
+    flex: 1, // Adjusts the button to take up the remaining space in its container
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1, // Adds border to button
+    borderColor: '#6a99f787', // Matches row border color
+    borderRadius: 5,
+    padding: 5,
+  },
+  detailsText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    width: '13%',
+    alignItems: 'center',
   },
   header: {
-    flexDirection: "row",
-    width: "100%",
+    flexDirection: 'row',
+    width: '100%',
   },
   textheader: {
     padding: 8,
     borderWidth: 1,
     borderColor: "#6a99f787",
     fontSize: 10,
-    textAlign: "center",
+    textAlign: 'center',
     fontWeight: '900',
     color: 'black',
     backgroundColor: '#dae9e7',
   },
   row: {
-    flexDirection: "row",
-    width: "100%",
+    flexDirection: 'row',
+    width: '100%',
   },
   text: {
     padding: 8,
     borderWidth: 1,
-    borderColor: "#6a99f787",
+    borderColor: '#6a99f787',
     fontSize: 10,
-    textAlign: "center",
+    textAlign: 'center',
     height: 40,
   },
   container: {
