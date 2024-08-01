@@ -5,9 +5,9 @@ import axios from 'axios'; // Import axios for HTTP requests
 import {API_URL} from "../services/userService"
 // const API_URL = 'http://192.168.1.22:3000/users'; // Change this to your server's URL
 
-export default function PressView({ addUser, navigation }) {
+export default function PressView({ addUser, navigation, user={} }) {
     const [isShow, setIsShow] = useState(false);
-    const [inputVal1, setInputVal1] = useState("");
+    const [inputVal1, setInputVal1] = useState(user.firstName || "");
     const [condition1, setCondition1] = useState("");
     const [inputVal2, setInputVal2] = useState("");
     const [condition2, setCondition2] = useState("");
