@@ -4,10 +4,11 @@ import PressView from './PressAddUser';
 import { API_URL } from '../services/userService';
 import ImageDel from './ImageDel';
 import ImageEdit from './ImageEdit';
+import DeleteUser from './DeleteUser';
 
 export default function User() {
-  const [isShow, setIsShow] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [isDeleteShow,setIsDeleteShow] = useState(false)
   const [detailsVisible, setDetailsVisible] = useState(null);
   const [users, setUsers] = useState([]);
   const [editMode, setEditMode] = useState(null);
@@ -30,24 +31,11 @@ export default function User() {
     }
   };
 
-  const deleteUser = async (id) => {
-    try {
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete user');
-      }
-      fetchUsers();
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
-  };
 
-  const onBtnPress = (index) => {
-    setUserToDelete(index);
-    setIsShow(true);
-  };
+  const pressOnDelete = (id) => {
+    setUserToDelete(id)
+    setIsDeleteShow(true)
+  }
 
   const addUser = async (user) => {
     try {
@@ -57,13 +45,6 @@ export default function User() {
     }
   };
 
-  const onBtnDeletePress = () => {
-    if (userToDelete !== null) {
-      deleteUser(users[userToDelete].id);
-      setUserToDelete(null);
-      setIsShow(false);
-    }
-  };
 
   const showDetails = (user) => {
     setDetailsVisible(user);
@@ -71,11 +52,6 @@ export default function User() {
     setEditedUser({});
   };
 
-  const hideDetails = () => {
-    setDetailsVisible(null);
-    setEditMode(null);
-    setEditedUser({});
-  };
 
   const saveChanges = () => {
     const updatedUser = { ...detailsVisible, ...editedUser };
@@ -84,41 +60,7 @@ export default function User() {
     setEditMode(null);
   };
 
-  const handleEditChange = (field, value) => {
-    setEditedUser({ ...editedUser, [field]: value });
-  };
 
-  const DetailField = ({ label, field }) => (
-    <View style={styles.detailFieldContainer}>
-      <Text style={styles.detailLabel}>{label}</Text>
-      <View style={styles.detailValueContainer}>
-        {editMode === field ? (
-          <TextInput
-            style={styles.detailValue}
-            value={editedUser[field] || detailsVisible[field]}
-            onChangeText={(text) => handleEditChange(field, text)}
-            onBlur={() => setEditMode(null)} // Exit edit mode on blur
-          />
-        ) : (
-          <Text
-            style={styles.detailValue}
-            onPress={() => setEditMode(field)} // Enter edit mode on press
-          >
-            {detailsVisible[field]}
-          </Text>
-        )}
-        {editMode === field && (
-          // <Pressable
-          //   style={styles.detailButton}
-          //   onPress={() => setEditMode(null)}>
-            <Text style={styles.detailButtonText}>
-              {/* <Image___ /> */}
-            </Text>
-          // </Pressable>
-        )}
-      </View>
-    </View>
-  );
 
   const addRow = (user, index) => (
     <View key={index} style={styles.row}>
@@ -141,7 +83,7 @@ export default function User() {
         <Pressable onPress={() => showDetails(user)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
           <ImageEdit />
         </Pressable>
-        <Pressable onPress={() => onBtnPress(index)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
+        <Pressable onPress={() => pressOnDelete(user.id)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
           <ImageDel />
         </Pressable>
       </View>
@@ -218,23 +160,7 @@ export default function User() {
         {users_display}
       </ScrollView>
       <PressView addUser={addUser} />
-
-      {/* Confirmation Modal */}
-      <Modal visible={isShow} animationType='fade' transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.deleteWarning}>Are you sure you want to delete this user?</Text>
-            <View style={styles.modalButtonContainer}>
-              <Pressable onPress={onBtnDeletePress} style={styles.modalButton}>
-                <Text style={[styles.modalButtonText, { color: 'white' }]}>Yes, I'm sure</Text>
-              </Pressable>
-              <Pressable onPress={() => setIsShow(false)} style={styles.modalButtonCancel}>
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <DeleteUser fetchUsers={fetchUsers} userId={userToDelete} isDeleteShow={isDeleteShow} setIsDeleteShow={setIsDeleteShow} />
     </View>
   );
 }
