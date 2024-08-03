@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Modal, Pressable, ScrollView, TextInput } from 'react-native';
-import PressView from './PressAddUser';
+import PressView from './AddUser';
 import { API_URL } from '../services/userService';
 import ImageDel from './ImageDel';
 import ImageEdit from './ImageEdit';
 import DeleteUser from './DeleteUser';
+import AddUser from './AddUser';
 
 export default function User() {
   const [userToDelete, setUserToDelete] = useState(null);
@@ -159,7 +160,7 @@ export default function User() {
       <ScrollView>
         {users_display}
       </ScrollView>
-      <PressView addUser={addUser} />
+      <AddUser fetchUsers={fetchUsers} />
       <DeleteUser fetchUsers={fetchUsers} userId={userToDelete} isDeleteShow={isDeleteShow} setIsDeleteShow={setIsDeleteShow} />
     </View>
   );
