@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Modal, Pressable, ScrollView, TextInput } from 'react-native';
 import PressView from './PressAddUser';
-import Image_ from './ImageDel';
 import { API_URL } from '../services/userService';
-import Image__ from './ImageDet';
-import Image___ from './ImageCheck';
+import ImageDel from './ImageDel';
+import ImageEdit from './ImageEdit';
 
 export default function User() {
   const [isShow, setIsShow] = useState(false);
@@ -140,10 +139,10 @@ export default function User() {
       </Pressable>
       <View style={styles.actionButtons}>
         <Pressable onPress={() => showDetails(user)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
-          <Image__ />
+          <ImageEdit />
         </Pressable>
         <Pressable onPress={() => onBtnPress(index)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
-          <Image_ />
+          <ImageDel />
         </Pressable>
       </View>
       {detailsVisible === user && (
