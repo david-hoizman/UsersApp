@@ -50,6 +50,22 @@ app.post('/users', (req, res) => {
   });
 });
 
+app.put('/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { firstName, lastName, email, phoneNumber, role } = req.body;
+
+  const sql = `UPDATE users SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, role = ? WHERE id = ?`;
+  db.run(sql, [firstName, lastName, email, phoneNumber, role, id], function (err) {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ updated: this.changes });
+  });
+});
+
 app.delete('/users/:id', (req, res) => {
   const { id } = req.params;
   const sql = `DELETE FROM users WHERE id = ?`;
