@@ -1,43 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Modal, Pressable, ScrollView, TextInput } from 'react-native';
-import PressView from './AddUser';
-import { API_URL, getUsers } from '../services/userService';
+import { StyleSheet, Text, View, Pressable, ScrollView, Picker, Image } from 'react-native';
+import { API_URL } from '../services/userService';
 import ImageDel from './ImageDel';
 import ImageEdit from './ImageEdit';
-import DeleteUser from './DeleteUser';
+import SortDropdown from './Sort';
 import AddUser from './AddUser';
 import UpdateUser from './UpdateUser';
+import DeleteUser from './DeleteUser';
+
+
 
 export default function User() {
   const [users, setUsers] = useState([]);
-  const [userToEdit, setUserToEdit] = useState(null);
-  const [isEditShow,setIsEditShow] = useState(false)
+  const [isEditShow, setIsEditShow] = useState(false);
+  const [isDeleteShow, setIsDeleteShow] = useState(false);
+  const [userToEdit, setUserToEdit] = useState(null)
   const [userToDelete, setUserToDelete] = useState(null);
-  const [isDeleteShow,setIsDeleteShow] = useState(false)
+  const [sortField, setSortField] = useState('firstName'); // Default sort field
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [sortField]);
 
   const fetchUsers = async () => {
     try {
-      const data = await getUsers();
-      setUsers(data);
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      const data = await response.json();
+      // Sort users based on the selected field
+      const sortedUsers = data.sort((a, b) => {
+        if (a[sortField] < b[sortField]) return -1;
+        if (a[sortField] > b[sortField]) return 1;
+        return 0;
+      });
+      setUsers(sortedUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
   };
 
 
-  const pressOnDelete = (id) => {
-    setUserToDelete(id)
-    setIsDeleteShow(true)
-  }
   const pressOnEdit = (user) => {
-    setUserToEdit(user)
-    setIsEditShow(true)
-  }
+    setUserToEdit(user);
+    setIsEditShow(true);
+  };
 
+  const pressOnDelete = (id) => {
+    setUserToDelete(id);
+    setIsDeleteShow(true);
+  };
+
+  // Build a row in the table
   const addRow = (user, index) => (
     <View key={index} style={styles.row}>
       <Pressable style={({ pressed }) => [styles.cell, { width: "13%" }, pressed && { opacity: 0.5 }]}>
@@ -63,6 +78,7 @@ export default function User() {
           <ImageDel />
         </Pressable>
       </View>
+
     </View>
   );
 
@@ -70,6 +86,14 @@ export default function User() {
 
   return (
     <View style={styles.container}>
+
+      {/* Sorting dropdown */}
+      <View style={styles.menu}>
+        <SortDropdown sortField={sortField} setSortField={setSortField} />
+
+        <AddUser fetchUsers={fetchUsers} />
+      </View>
+      {/* View table headers*/}
       <View style={styles.header}>
         <Text style={[styles.textheader, { width: "13%" }]}>First Name</Text>
         <Text style={[styles.textheader, { width: "13%" }]}>Last Name</Text>
@@ -79,10 +103,11 @@ export default function User() {
         <Text style={[styles.textheader, { width: "13%" }]}>Action</Text>
       </View>
 
+      {/* View table data*/}
       <ScrollView>
         {users_display}
       </ScrollView>
-      <AddUser fetchUsers={fetchUsers} />
+
       <UpdateUser fetchUsers={fetchUsers} user={userToEdit} isEditShow={isEditShow} setIsEditShow={setIsEditShow} />
       <DeleteUser fetchUsers={fetchUsers} userId={userToDelete} isDeleteShow={isDeleteShow} setIsDeleteShow={setIsDeleteShow} />
     </View>
@@ -97,62 +122,7 @@ const styles = StyleSheet.create({
   },
   editTitle: {
     fontWeight: '900',
-    
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    elevation: 10,
-  },
-  modalButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 20,
-  },
-  modalButton: {
-    backgroundColor: 'blue',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    marginRight: 10,
-    width: '48%',
-    alignItems: 'center',
-  },
-  modalButtonSave: {
-    backgroundColor: 'green',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    marginRight: 10,
-    width: '48%',
-    alignItems: 'center',
-  },
-  modalButtonCancel: {
-    backgroundColor: 'red',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    marginLeft: 10,
-    width: '48%',
-    borderWidth: 1,
-    borderColor: '#1a73e8',
-    alignItems: 'center',
-  },
-  modalButtonText: {
-    color: 'white',
-    fontSize: 16,
+
   },
   imgBtn: {
     flex: 1,
@@ -176,6 +146,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '13%',
     alignItems: 'center',
+  },
+  menu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'flex-start', // Align items to the left
+  },
+  title: {
+    flexDirection: 'column',
+    // width: '13%',
+    alignItems: 'center',
+    marginBottom: 20
   },
   header: {
     flexDirection: 'row',
@@ -273,63 +255,8 @@ const styles = StyleSheet.create({
   },
   ecceptButton: {
     backgroundColor: 'green',
+  },
+  textTitle: {
+    fontSize: 20
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
