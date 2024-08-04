@@ -1,9 +1,28 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, Pressable } from 'react-native';
 
+/**
+ * SortDropdown component allows the user to select a field for sorting.
+ * 
+ * @component
+ * @param {string} sortField - The currently selected field to sort by.
+ * @param {Function} setSortField - A function to update the sortField state.
+ * @example
+ * return (
+ *   <SortDropdown
+ *     sortField={currentSortField}
+ *     setSortField={setCurrentSortField}
+ *   />
+ * )
+ */
 const SortDropdown = ({ sortField, setSortField }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
+  /**
+   * Handles the selection of a sort field.
+   * 
+   * @param {string} field - The field to sort by.
+   */
   const handleSelect = (field) => {
     setSortField(field);
     setModalVisible(false);
@@ -48,7 +67,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     marginBottom: 10,
     alignItems: 'flex-start',
-    margin:10
+    margin: 10
   },
   dropdownButton: {
     backgroundColor: '#dae9e7',

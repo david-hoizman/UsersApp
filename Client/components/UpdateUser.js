@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { TextInput, Modal, Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { updateUser } from "../services/userService";
 
+/**
+ * Component for updating user details in a modal form.
+ * 
+ * @param {Object} props - Component props.
+ * @param {Function} props.fetchUsers - Function to fetch the list of users.
+ * @param {Object} props.user - User object to be updated.
+ * @param {boolean} props.isEditShow - Flag indicating if the modal should be shown.
+ * @param {Function} props.setIsEditShow - Function to toggle the visibility of the modal.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function UpdateUser({ fetchUsers, user, isEditShow, setIsEditShow }) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -11,7 +21,11 @@ export default function UpdateUser({ fetchUsers, user, isEditShow, setIsEditShow
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({}); // Track which fields have been touched
 
-    // Validate form fields
+    /**
+     * Validates the form fields.
+     * 
+     * @returns {boolean} True if no validation errors, otherwise false.
+     */
     const validate = () => {
         const newErrors = {};
         const nameRegex = /^[A-Za-z]+$/; // Regex for validating only letters
@@ -41,6 +55,10 @@ export default function UpdateUser({ fetchUsers, user, isEditShow, setIsEditShow
         return Object.keys(newErrors).length === 0;
     };
 
+    /**
+     * Handles the user update process.
+     * Validates the form and performs the update operation.
+     */
     const handleUpdateUser = async () => {
         setTouched({ firstName: true, lastName: true, email: true, phoneNumber: true, role: true }); // Mark all fields as touched
         if (validate()) {
@@ -55,6 +73,9 @@ export default function UpdateUser({ fetchUsers, user, isEditShow, setIsEditShow
         }
     };
 
+    /**
+     * Clears the form fields and resets validation errors.
+     */
     const handleClear = () => {
         setFirstName("");
         setLastName("");

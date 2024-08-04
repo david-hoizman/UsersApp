@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { TextInput, Modal, Pressable, StyleSheet, Text, View, Alert, Image } from 'react-native';
 import { addUser } from "../services/userService";
 
+/**
+ * A component for adding a new user via a modal form.
+ * 
+ * @param {Object} props - The component props.
+ * @param {Function} props.fetchUsers - A function to fetch the updated list of users after adding a new user.
+ * @param {Object} props.navigation - The navigation prop for navigating back to the previous screen.
+ * 
+ * @returns {JSX.Element} A modal component for user addition and an add button.
+ */
 export default function AddUser({ fetchUsers, navigation }) {
     const [isShow, setIsShow] = useState(false);
     const [firstName, setFirstName] = useState('');
@@ -12,6 +21,12 @@ export default function AddUser({ fetchUsers, navigation }) {
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({}); // Track which fields have been touched
 
+    /**
+     * Validates the form fields and sets error messages.
+     * 
+     * @function
+     * @returns {boolean} True if the form is valid, false otherwise.
+     */
     const validate = () => {
         const newErrors = {};
         const nameRegex = /^[A-Za-z]+$/; // Regex for validating only letters
@@ -41,6 +56,13 @@ export default function AddUser({ fetchUsers, navigation }) {
         return Object.keys(newErrors).length === 0;
     };
 
+    /**
+     * Handles the addition of a new user by calling the addUser service.
+     * 
+     * @async
+     * @function
+     * @returns {Promise<void>}
+     */
     const handleAddUser = async () => {
         setTouched({ firstName: true, lastName: true, email: true, phoneNumber: true, role: true }); // Mark all fields as touched
         if (validate()) {
@@ -55,6 +77,11 @@ export default function AddUser({ fetchUsers, navigation }) {
         }
     };
 
+    /**
+     * Handles the cancellation of the form and optionally navigates back.
+     * 
+     * @function
+     */
     const handleCancel = () => {
         setIsShow(false);
         if (navigation) {
@@ -62,6 +89,11 @@ export default function AddUser({ fetchUsers, navigation }) {
         }
     };
 
+    /**
+     * Clears all form fields and errors.
+     * 
+     * @function
+     */
     const handleClear = () => {
         setFirstName("");
         setLastName("");
@@ -78,6 +110,11 @@ export default function AddUser({ fetchUsers, navigation }) {
         }
     }, [isShow]);
 
+    /**
+     * Opens the modal form for adding a new user.
+     * 
+     * @function
+     */
     const onBtnPress = () => {
         setIsShow(true);
     };
@@ -253,17 +290,6 @@ const styles = StyleSheet.create({
         height: 25
     }
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 

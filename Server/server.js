@@ -13,23 +13,28 @@ app.use(bodyParser.json());
 const dbPath = path.resolve(__dirname, './database.db');
 const db = new sqlite3.Database(dbPath);
 
-// db.serialize(() => {
-db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    firstName TEXT NOT NULL,
-    lastName TEXT NOT NULL,
-    
-    email TEXT NOT NULL UNIQUE,
-    phoneNumber TEXT NOT NULL,
-    role TEXT NOT NULL
-  )`);
-// });
+// Ensure table creation
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      firstName TEXT NOT NULL,
+      lastName TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      phoneNumber TEXT NOT NULL,
+      role TEXT NOT NULL
+    )`, (err) => {
+    if (err) {
+      console.error('Error creating table:', err.message);
+    }
+  });
+});
 
 // Routes
 app.get('/users', (req, res) => {
   db.all('SELECT * FROM users', [], (err, rows) => {
     if (err) {
-      throw err;
+      console.error('Error retrieving users:', err.message);
+      return res.status(500).json({ error: 'Internal server error' });
     }
     res.json(rows);
   });
@@ -37,13 +42,11 @@ app.get('/users', (req, res) => {
 
 app.post('/users', (req, res) => {
   const { firstName, lastName, email, phoneNumber, role } = req.body;
-  console.log('Received data:', req.body); 
- 
   const sql = `INSERT INTO users (firstName, lastName, email, phoneNumber, role)
                VALUES (?, ?, ?, ?, ?)`;
   db.run(sql, [firstName, lastName, email, phoneNumber, role], function (err) {
     if (err) {
-      console.log(err)
+      console.error('Error inserting user:', err.message);
       return res.status(400).json({ error: err.message });
     }
     res.status(201).json({ id: this.lastID });
@@ -53,10 +56,10 @@ app.post('/users', (req, res) => {
 app.put('/users/:id', (req, res) => {
   const { id } = req.params;
   const { firstName, lastName, email, phoneNumber, role } = req.body;
-
   const sql = `UPDATE users SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, role = ? WHERE id = ?`;
   db.run(sql, [firstName, lastName, email, phoneNumber, role, id], function (err) {
     if (err) {
+      console.error('Error updating user:', err.message);
       return res.status(400).json({ error: err.message });
     }
     if (this.changes === 0) {
@@ -71,13 +74,14 @@ app.delete('/users/:id', (req, res) => {
   const sql = `DELETE FROM users WHERE id = ?`;
   db.run(sql, [id], function (err) {
     if (err) {
+      console.error('Error deleting user:', err.message);
       return res.status(400).json({ error: err.message });
     }
-    res.status(201).json({ deleted: this.changes });
+    res.status(200).json({ deleted: this.changes });
   });
 });
 
 // Start server
 app.listen(port, () => {
-  console.log(`Server is running on 'http://192.168.1.22:3000/users'`);
+  console.log(`Server is running on 'http://localhost:${port}/users'`);
 });
