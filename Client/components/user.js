@@ -31,6 +31,27 @@ export default function User() {
     }
   };
 
+  const updateUser = async (id, updatedData) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update user');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  };
+
+
   const deleteUser = async (id) => {
     try {
       const response = await fetch(`${API_URL}/${id}`, {
@@ -69,7 +90,7 @@ export default function User() {
   const showDetails = (user) => {
     setDetailsVisible(user);
     setEditMode(null);
-    setEditedUser({});
+    setEditedUser(user);
   };
 
   const hideDetails = () => {
@@ -78,11 +99,15 @@ export default function User() {
     setEditedUser({});
   };
 
-  const saveChanges = () => {
+  const saveChanges = async () => {
     const updatedUser = { ...detailsVisible, ...editedUser };
-    // TODO: Add logic to update the user on the server
-    setDetailsVisible(updatedUser);
-    setEditMode(null);
+    try {
+      await updateUser(updatedUser.id, updatedUser);
+      setDetailsVisible(updatedUser);
+      setEditMode(null);
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    }
   };
 
   const handleEditChange = (field, value) => {
