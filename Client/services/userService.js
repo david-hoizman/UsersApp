@@ -1,8 +1,7 @@
 // services/userService.js
 import axios from 'axios';
 
-const IP = '192.168.33.15';
-
+const IP = '192.168.33.12';
 export const API_URL = `http://${IP}:3000/users`; // שנה אם ה-API שלך פועל בכתובת שונה
 
 // פונקציה לקבלת כל המשתמשים
@@ -23,6 +22,17 @@ export const addUser = async (user) => {
     return response.data;
   } catch (error) {
     console.error('Error adding user:', error);
+    throw error;
+  }
+};
+
+// פונקציה לעדכון משתמש
+export const updateUser = async (id, updatedUser) => {
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, updatedUser);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error);
     throw error;
   }
 };
