@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Modal, Pressable, ScrollView, TextInput } from 'react-native';
 import PressView from './AddUser';
-import { API_URL } from '../services/userService';
+import { API_URL, getUsers } from '../services/userService';
 import ImageDel from './ImageDel';
 import ImageEdit from './ImageEdit';
 import DeleteUser from './DeleteUser';
 import AddUser from './AddUser';
+import UpdateUser from './UpdateUser';
 
 export default function User() {
+  const [users, setUsers] = useState([]);
+  const [userToEdit, setUserToEdit] = useState(null);
+  const [isEditShow,setIsEditShow] = useState(false)
   const [userToDelete, setUserToDelete] = useState(null);
   const [isDeleteShow,setIsDeleteShow] = useState(false)
-  const [detailsVisible, setDetailsVisible] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [editMode, setEditMode] = useState(null);
-  const [editedUser, setEditedUser] = useState({});
 
   useEffect(() => {
     fetchUsers();
@@ -21,11 +21,7 @@ export default function User() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
-      }
-      const data = await response.json();
+      const data = await getUsers();
       setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -37,31 +33,10 @@ export default function User() {
     setUserToDelete(id)
     setIsDeleteShow(true)
   }
-
-  const addUser = async (user) => {
-    try {
-      fetchUsers();
-    } catch (error) {
-      console.error('Error adding user:', error);
-    }
-  };
-
-
-  const showDetails = (user) => {
-    setDetailsVisible(user);
-    setEditMode(null);
-    setEditedUser({});
-  };
-
-
-  const saveChanges = () => {
-    const updatedUser = { ...detailsVisible, ...editedUser };
-    // TODO: Add logic to update the user on the server
-    setDetailsVisible(updatedUser);
-    setEditMode(null);
-  };
-
-
+  const pressOnEdit = (user) => {
+    setUserToEdit(user)
+    setIsEditShow(true)
+  }
 
   const addRow = (user, index) => (
     <View key={index} style={styles.row}>
@@ -81,66 +56,13 @@ export default function User() {
         <Text style={styles.textContent} numberOfLines={1}>{user.role}</Text>
       </Pressable>
       <View style={styles.actionButtons}>
-        <Pressable onPress={() => showDetails(user)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
+        <Pressable onPress={() => pressOnEdit(user)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
           <ImageEdit />
         </Pressable>
         <Pressable onPress={() => pressOnDelete(user.id)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
           <ImageDel />
         </Pressable>
       </View>
-      {detailsVisible === user && (
-        <Modal visible={!!detailsVisible} animationType='slide' transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Edit User Details</Text>
-            <Text style={styles.editTitle}>first name</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.firstName}
-              onChangeText={(text) => setEditedUser({...editedUser, firstName: text})}
-              placeholder= {user.firstName}
-            />
-            <Text style={styles.editTitle}>last name</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.lastName}
-              onChangeText={(text) => setEditedUser({...editedUser, lastName: text})}
-              placeholder= {user.lastName}
-            />
-            <Text style={styles.editTitle}>email</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.email}
-              onChangeText={(text) => setEditedUser({...editedUser, email: text})}
-              placeholder= {user.email}
-            />
-            <Text style={styles.editTitle}>phon number</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.phoneNumber}
-              onChangeText={(text) => setEditedUser({...editedUser, phoneNumber: text})}
-              placeholder= {user.phoneNumber}
-            />
-            <Text style={styles.editTitle}>role</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.role}
-              onChangeText={(text) => setEditedUser({...editedUser, role: text})}
-              placeholder= {user.role}
-              
-            />
-            <View style={styles.buttonContainer}>
-              <Pressable style={[styles.button, styles.ecceptButton]} onPress={saveChanges}>
-                <Text style={styles.buttonText}>Save</Text>
-              </Pressable>
-              <Pressable style={[styles.button, styles.cancelButton]} onPress={() => setDetailsVisible(null)}>
-                <Text style={styles.buttonText}>Cancel</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-      )}
     </View>
   );
 
@@ -161,6 +83,7 @@ export default function User() {
         {users_display}
       </ScrollView>
       <AddUser fetchUsers={fetchUsers} />
+      <UpdateUser fetchUsers={fetchUsers} user={userToEdit} isEditShow={isEditShow} setIsEditShow={setIsEditShow} />
       <DeleteUser fetchUsers={fetchUsers} userId={userToDelete} isDeleteShow={isDeleteShow} setIsDeleteShow={setIsDeleteShow} />
     </View>
   );
