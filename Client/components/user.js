@@ -86,6 +86,10 @@ export default function User() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.title}>
+        <Image style={styles.img} source={require('../assets/images/users.png')} />
+        <Text style={styles.textTitle}>Users Management</Text>
+      </View>
 
       {/* Sorting dropdown */}
       <View style={styles.menu}>
