@@ -1,23 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Modal, Pressable, ScrollView, TextInput } from 'react-native';
-import PressView from './PressAddUser';
-import Image_ from './ImageDel';
+import { StyleSheet, Text, View, Pressable, ScrollView, Image, Modal, TouchableOpacity } from 'react-native';
 import { API_URL } from '../services/userService';
-import Image__ from './ImageDet';
-import Image___ from './ImageCheck';
+import ImageDel from './ImageDel';
+import ImageEdit from './ImageEdit';
+import SortDropdown from './Sort';
+import AddUser from './AddUser';
+import UpdateUser from './UpdateUser';
+import DeleteUser from './DeleteUser';
 
+/**
+ * User management component.
+ * 
+ * This component fetches and displays a list of users. It allows sorting of the users,
+ * editing and deleting user details, and shows a modal with the total number of users.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <User />
+ * )
+ */
 export default function User() {
-  const [isShow, setIsShow] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
-  const [detailsVisible, setDetailsVisible] = useState(null);
   const [users, setUsers] = useState([]);
-  const [editMode, setEditMode] = useState(null);
-  const [editedUser, setEditedUser] = useState({});
+  const [isEditShow, setIsEditShow] = useState(false);
+  const [isDeleteShow, setIsDeleteShow] = useState(false);
+  const [userToEdit, setUserToEdit] = useState(null);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [sortField, setSortField] = useState('firstName'); // Default sort field
+  const [isModalVisible, setIsModalVisible] = useState(false); // State for the modal visibility
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [sortField]);
 
+  /**
+   * Fetches the list of users from the API and sorts them based on the selected field.
+   * 
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   const fetchUsers = async () => {
     try {
       const response = await fetch(API_URL);
@@ -25,12 +47,19 @@ export default function User() {
         throw new Error('Failed to fetch users');
       }
       const data = await response.json();
-      setUsers(data);
+      // Sort users based on the selected field
+      const sortedUsers = data.sort((a, b) => {
+        if (a[sortField] < b[sortField]) return -1;
+        if (a[sortField] > b[sortField]) return 1;
+        return 0;
+      });
+      setUsers(sortedUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
   };
 
+<<<<<<< HEAD
   const updateUser = async (id, updatedData) => {
     try {
       const response = await fetch(`${API_URL}/${id}`, {
@@ -64,29 +93,43 @@ export default function User() {
     } catch (error) {
       console.error('Error deleting user:', error);
     }
+=======
+  /**
+   * Handles the edit action for a user.
+   * 
+   * @param {Object} user - The user object to edit.
+   */
+  const pressOnEdit = (user) => {
+    setUserToEdit(user);
+    setIsEditShow(true);
+>>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
   };
 
-  const onBtnPress = (index) => {
-    setUserToDelete(index);
-    setIsShow(true);
+  /**
+   * Handles the delete action for a user.
+   * 
+   * @param {string} id - The ID of the user to delete.
+   */
+  const pressOnDelete = (id) => {
+    setUserToDelete(id);
+    setIsDeleteShow(true);
   };
 
-  const addUser = async (user) => {
-    try {
-      fetchUsers();
-    } catch (error) {
-      console.error('Error adding user:', error);
-    }
+  /**
+   * Handles the image press to show the modal.
+   */
+  const handleImagePress = () => {
+    setIsModalVisible(true); // Show the modal on image press
   };
 
-  const onBtnDeletePress = () => {
-    if (userToDelete !== null) {
-      deleteUser(users[userToDelete].id);
-      setUserToDelete(null);
-      setIsShow(false);
-    }
+  /**
+   * Closes the modal.
+   */
+  const closeModal = () => {
+    setIsModalVisible(false);
   };
 
+<<<<<<< HEAD
   const showDetails = (user) => {
     setDetailsVisible(user);
     setEditMode(null);
@@ -146,6 +189,15 @@ export default function User() {
     </View>
   );
 
+=======
+  /**
+   * Builds a row in the table for a user.
+   * 
+   * @param {Object} user - The user object to display.
+   * @param {number} index - The index of the user in the list.
+   * @returns {JSX.Element} - The row component for the user.
+   */
+>>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
   const addRow = (user, index) => (
     <View key={index} style={styles.row}>
       <Pressable style={({ pressed }) => [styles.cell, { width: "13%" }, pressed && { opacity: 0.5 }]}>
@@ -164,66 +216,13 @@ export default function User() {
         <Text style={styles.textContent} numberOfLines={1}>{user.role}</Text>
       </Pressable>
       <View style={styles.actionButtons}>
-        <Pressable onPress={() => showDetails(user)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
-          <Image__ />
+        <Pressable onPress={() => pressOnEdit(user)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
+          <ImageEdit />
         </Pressable>
-        <Pressable onPress={() => onBtnPress(index)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
-          <Image_ />
+        <Pressable onPress={() => pressOnDelete(user.id)} style={({ pressed }) => [styles.detailsBtn, pressed && { opacity: 0.5 }]}>
+          <ImageDel />
         </Pressable>
       </View>
-      {detailsVisible === user && (
-        <Modal visible={!!detailsVisible} animationType='slide' transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Edit User Details</Text>
-            <Text style={styles.editTitle}>first name</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.firstName}
-              onChangeText={(text) => setEditedUser({...editedUser, firstName: text})}
-              placeholder= {user.firstName}
-            />
-            <Text style={styles.editTitle}>last name</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.lastName}
-              onChangeText={(text) => setEditedUser({...editedUser, lastName: text})}
-              placeholder= {user.lastName}
-            />
-            <Text style={styles.editTitle}>email</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.email}
-              onChangeText={(text) => setEditedUser({...editedUser, email: text})}
-              placeholder= {user.email}
-            />
-            <Text style={styles.editTitle}>phon number</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.phoneNumber}
-              onChangeText={(text) => setEditedUser({...editedUser, phoneNumber: text})}
-              placeholder= {user.phoneNumber}
-            />
-            <Text style={styles.editTitle}>role</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.role}
-              onChangeText={(text) => setEditedUser({...editedUser, role: text})}
-              placeholder= {user.role}
-              
-            />
-            <View style={styles.buttonContainer}>
-              <Pressable style={[styles.button, styles.ecceptButton]} onPress={saveChanges}>
-                <Text style={styles.buttonText}>Save</Text>
-              </Pressable>
-              <Pressable style={[styles.button, styles.cancelButton]} onPress={() => setDetailsVisible(null)}>
-                <Text style={styles.buttonText}>Cancel</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-      )}
     </View>
   );
 
@@ -231,6 +230,24 @@ export default function User() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.title}>
+        <Pressable onPress={handleImagePress} style={styles.imageContainer}>
+          <Image style={styles.img} source={require('../assets/images/users.png')} />
+        </Pressable>
+        <Text style={styles.textTitle}>Users Management</Text>
+      </View>
+
+      {/* Header with sorting dropdown and add user button */}
+      <View style={styles.headerContainer}>
+        <Pressable style={styles.sortWrapper}>
+          <SortDropdown sortField={sortField} setSortField={setSortField} />
+        </Pressable>
+        <View style={styles.addUserWrapper}>
+          <AddUser fetchUsers={fetchUsers} />
+        </View>
+      </View>
+
+      {/* View table headers*/}
       <View style={styles.header}>
         <Text style={[styles.textheader, { width: "13%" }]}>First Name</Text>
         <Text style={[styles.textheader, { width: "13%" }]}>Last Name</Text>
@@ -240,26 +257,30 @@ export default function User() {
         <Text style={[styles.textheader, { width: "13%" }]}>Action</Text>
       </View>
 
+      {/* View table data*/}
       <ScrollView>
         {users_display}
       </ScrollView>
-      <PressView addUser={addUser} />
 
-      {/* Confirmation Modal */}
-      <Modal visible={isShow} animationType='fade' transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.deleteWarning}>Are you sure you want to delete this user?</Text>
-            <View style={styles.modalButtonContainer}>
-              <Pressable onPress={onBtnDeletePress} style={styles.modalButton}>
-                <Text style={[styles.modalButtonText, { color: 'white' }]}>Yes, I'm sure</Text>
-              </Pressable>
-              <Pressable onPress={() => setIsShow(false)} style={styles.modalButtonCancel}>
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </Pressable>
-            </View>
+      <UpdateUser fetchUsers={fetchUsers} user={userToEdit} isEditShow={isEditShow} setIsEditShow={setIsEditShow} />
+      <DeleteUser fetchUsers={fetchUsers} userId={userToDelete} isDeleteShow={isDeleteShow} setIsDeleteShow={setIsDeleteShow} />
+
+      {/* Modal for displaying user count */}
+      <Modal
+        transparent={true}
+        visible={isModalVisible}
+        animationType="slide"
+        onRequestClose={closeModal}
+      >
+        <TouchableOpacity style={styles.modalContainer} onPress={closeModal}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Total Users</Text>
+            <Text style={styles.modalBody}>{users.length}</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
@@ -273,62 +294,6 @@ const styles = StyleSheet.create({
   },
   editTitle: {
     fontWeight: '900',
-    
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    elevation: 10,
-  },
-  modalButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 20,
-  },
-  modalButton: {
-    backgroundColor: 'blue',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    marginRight: 10,
-    width: '48%',
-    alignItems: 'center',
-  },
-  modalButtonSave: {
-    backgroundColor: 'green',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    marginRight: 10,
-    width: '48%',
-    alignItems: 'center',
-  },
-  modalButtonCancel: {
-    backgroundColor: 'red',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    marginLeft: 10,
-    width: '48%',
-    borderWidth: 1,
-    borderColor: '#1a73e8',
-    alignItems: 'center',
-  },
-  modalButtonText: {
-    color: 'white',
-    fontSize: 16,
   },
   imgBtn: {
     flex: 1,
@@ -352,6 +317,51 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '13%',
     alignItems: 'center',
+  },
+  menu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'flex-start', 
+  },
+  title: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  imageContainer: {
+    marginBottom: 10,
+    borderRadius: 20, 
+    overflow: 'hidden',
+  },
+  img: {
+    width: 40,
+    height: 40,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    paddingHorizontal: 3,
+    justifyContent: 'space-between',
+  },
+  sortWrapper: {
+    paddingVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
+  },
+  addUserWrapper: {
+    marginRight: 2, 
+    backgroundColor: '#dae9e7', 
+    borderColor: '#1f7690', 
+    borderWidth: 1,
+    borderRadius: 4, 
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -415,97 +425,50 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: '100%',
   },
-  // New styles for the edit modal
   modalTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 15,
+    color: '#333',
   },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
+  modalBody: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#1f7690',
+    marginBottom: 20,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+  closeButton: {
+    backgroundColor: '#1f7690',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
   },
-  button: {
-    padding: 10,
-    borderRadius: 5,
-    minWidth: 100,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  cancelButton: {
-    backgroundColor: 'red',
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  ecceptButton: {
-    backgroundColor: 'green',
-  }
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
+    width: '80%',
+  },
+  textTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

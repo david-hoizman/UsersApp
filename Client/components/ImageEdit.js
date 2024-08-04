@@ -2,15 +2,14 @@ import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import React from 'react';
 
 /**
- * A component that renders a delete icon.
+ * A component that displays an image.
  * 
- * @returns {JSX.Element} A view containing an image of a delete icon.
+ * @returns {JSX.Element} A view containing an image.
  */
-export default function ImageDel() {
-  
+export default function ImageEdit() {
   return (
-    <View>    
-        <Image style={styles.img} source={require('../assets/images/delete.png')} />
+    <View>
+      <Image style={styles.img} source={require('../assets/images/resume.png')} />
     </View>
   );
 }
