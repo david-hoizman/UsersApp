@@ -1,26 +1,57 @@
-
-import { TextInput, Modal, Pressable, StyleSheet, Text, View, Alert,Image} from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { addUser } from "../services/userService"
-import { inline } from 'react-native-web/dist/cjs/exports/StyleSheet/compiler';
+import { TextInput, Modal, Pressable, StyleSheet, Text, View, Alert, Image } from 'react-native';
+import { addUser } from "../services/userService";
 
-export default function AddUser({ fetchUsers, navigation, user = {} }) {
+export default function AddUser({ fetchUsers, navigation }) {
     const [isShow, setIsShow] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [role, setRole] = useState('');
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({}); // Track which fields have been touched
 
+    const validate = () => {
+        const newErrors = {};
+        const nameRegex = /^[A-Za-z]+$/; // Regex for validating only letters
+        const phoneRegex = /^0[0-9]{9}$/; // Regex for phone numbers starting with 0 and having 10 digits
+
+        if (!firstName) newErrors.firstName = 'First Name is required';
+        else if (!nameRegex.test(firstName)) newErrors.firstName = 'First Name must contain only letters';
+
+        if (!lastName) newErrors.lastName = 'Last Name is required';
+        else if (!nameRegex.test(lastName)) newErrors.lastName = 'Last Name must contain only letters';
+
+        if (!email) {
+            newErrors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            newErrors.email = 'Invalid email address';
+        }
+
+        if (!phoneNumber) {
+            newErrors.phoneNumber = 'Phone Number is required';
+        } else if (!phoneRegex.test(phoneNumber)) {
+            newErrors.phoneNumber = 'Phone Number must start with 0 and be 10 digits long';
+        }
+
+        if (!role) newErrors.role = 'Role is required';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleAddUser = async () => {
-        try {
-            await addUser({ firstName, lastName, email, phoneNumber, role });
-            fetchUsers();
-            handleClear();
-            setIsShow(false);
-        } catch (error) {
-            Alert.alert("Error", "Failed to add user. Please try again.");
+        setTouched({ firstName: true, lastName: true, email: true, phoneNumber: true, role: true }); // Mark all fields as touched
+        if (validate()) {
+            try {
+                await addUser({ firstName, lastName, email, phoneNumber, role });
+                fetchUsers();
+                handleClear();
+                setIsShow(false);
+            } catch (error) {
+                Alert.alert("Error", "Failed to add user. Please try again.");
+            }
         }
     };
 
@@ -32,11 +63,13 @@ export default function AddUser({ fetchUsers, navigation, user = {} }) {
     };
 
     const handleClear = () => {
-        setFirstName("")
-        setLastName("")
-        setEmail("")
-        setPhoneNumber("")
-        setRole("")
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        setPhoneNumber("");
+        setRole("");
+        setErrors({});
+        setTouched({});
     };
 
     useEffect(() => {
@@ -57,41 +90,52 @@ export default function AddUser({ fetchUsers, navigation, user = {} }) {
                         <Text style={styles.title}>Personal Details Form</Text>
 
                         <TextInput
-                            style={styles.inputText}
+                            style={[styles.inputText, errors.firstName && touched.firstName && styles.errorInput]}
                             placeholder="First Name"
                             onChangeText={setFirstName}
                             value={firstName}
+                            onBlur={() => setTouched({ ...touched, firstName: true })} // Mark field as touched
                         />
+                        {errors.firstName && touched.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
 
                         <TextInput
-                            style={styles.inputText}
+                            style={[styles.inputText, errors.lastName && touched.lastName && styles.errorInput]}
                             placeholder="Last Name"
                             onChangeText={setLastName}
                             value={lastName}
+                            onBlur={() => setTouched({ ...touched, lastName: true })} // Mark field as touched
                         />
+                        {errors.lastName && touched.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
 
                         <TextInput
-                            style={styles.inputText}
+                            style={[styles.inputText, errors.email && touched.email && styles.errorInput]}
                             placeholder="Email"
+                            keyboardType='email-address'
                             onChangeText={setEmail}
                             value={email}
+                            onBlur={() => setTouched({ ...touched, email: true })} // Mark field as touched
                         />
+                        {errors.email && touched.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
                         <TextInput
-                            style={styles.inputText}
+                            style={[styles.inputText, errors.phoneNumber && touched.phoneNumber && styles.errorInput]}
                             placeholder="Phone Number"
                             keyboardType='number-pad'
                             maxLength={10}
                             onChangeText={setPhoneNumber}
                             value={phoneNumber}
+                            onBlur={() => setTouched({ ...touched, phoneNumber: true })} // Mark field as touched
                         />
+                        {errors.phoneNumber && touched.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
 
                         <TextInput
-                            style={styles.inputText}
+                            style={[styles.inputText, errors.role && touched.role && styles.errorInput]}
                             placeholder="Role"
                             onChangeText={setRole}
                             value={role}
+                            onBlur={() => setTouched({ ...touched, role: true })} // Mark field as touched
                         />
+                        {errors.role && touched.role && <Text style={styles.errorText}>{errors.role}</Text>}
 
                         <View style={styles.buttonContainer}>
                             <View style={styles.buttonRow}>
@@ -115,9 +159,7 @@ export default function AddUser({ fetchUsers, navigation, user = {} }) {
                     onPress={onBtnPress}
                     style={({ pressed }) => [styles.addBtn, pressed && { opacity: 0.7 }]}
                 >
-                    {/* <Text style={styles.btnText}>Add User</Text> */}
-                    <Image style={styles.addImg} source={require('../assets/images/add.png')}/>
-
+                    <Image style={styles.addImg} source={require('../assets/images/add.png')} />
                 </Pressable>
             )}
         </>
@@ -156,6 +198,9 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         fontSize: 14,
         width: '100%'
+    },
+    errorInput: {
+        borderColor: 'red'
     },
     errorText: {
         fontSize: 14,
@@ -203,12 +248,24 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 16
     },
-    btnText: {
-        color: 'white',
-        fontSize: 16,
-    },
-   addImg:{
-        width:25,
-        height:25
-        }
+    addImg: {
+        width: 25,
+        height: 25
+    }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

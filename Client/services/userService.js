@@ -1,7 +1,7 @@
 // services/userService.js
 import axios from 'axios';
 
-const IP = '192.168.33.15';
+const IP = '192.168.33.12';
 export const API_URL = `http://${IP}:3000/users`; // שנה אם ה-API שלך פועל בכתובת שונה
 
 // פונקציה לקבלת כל המשתמשים
