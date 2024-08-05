@@ -59,7 +59,16 @@ export default function User() {
     }
   };
 
-<<<<<<< HEAD
+  /**
+   * Updates an existing user in the API.
+   * 
+   * @async
+   * @function
+   * @param {string} id - The ID of the user to be updated.
+   * @param {Object} updatedData - The updated user data.
+   * @returns {Promise<Object>} A promise that resolves to the updated user object.
+   * @throws {Error} Throws an error if the request fails.
+   */
   const updateUser = async (id, updatedData) => {
     try {
       const response = await fetch(`${API_URL}/${id}`, {
@@ -80,7 +89,15 @@ export default function User() {
     }
   };
 
-
+  /**
+   * Deletes a user from the API.
+   * 
+   * @async
+   * @function
+   * @param {string} id - The ID of the user to be deleted.
+   * @returns {Promise<void>}
+   * @throws {Error} Throws an error if the request fails.
+   */
   const deleteUser = async (id) => {
     try {
       const response = await fetch(`${API_URL}/${id}`, {
@@ -93,7 +110,8 @@ export default function User() {
     } catch (error) {
       console.error('Error deleting user:', error);
     }
-=======
+  };
+
   /**
    * Handles the edit action for a user.
    * 
@@ -102,7 +120,6 @@ export default function User() {
   const pressOnEdit = (user) => {
     setUserToEdit(user);
     setIsEditShow(true);
->>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
   };
 
   /**
@@ -129,67 +146,6 @@ export default function User() {
     setIsModalVisible(false);
   };
 
-<<<<<<< HEAD
-  const showDetails = (user) => {
-    setDetailsVisible(user);
-    setEditMode(null);
-    setEditedUser(user);
-  };
-
-  const hideDetails = () => {
-    setDetailsVisible(null);
-    setEditMode(null);
-    setEditedUser({});
-  };
-
-  const saveChanges = async () => {
-    const updatedUser = { ...detailsVisible, ...editedUser };
-    try {
-      await updateUser(updatedUser.id, updatedUser);
-      setDetailsVisible(updatedUser);
-      setEditMode(null);
-    } catch (error) {
-      console.error('Error saving changes:', error);
-    }
-  };
-
-  const handleEditChange = (field, value) => {
-    setEditedUser({ ...editedUser, [field]: value });
-  };
-
-  const DetailField = ({ label, field }) => (
-    <View style={styles.detailFieldContainer}>
-      <Text style={styles.detailLabel}>{label}</Text>
-      <View style={styles.detailValueContainer}>
-        {editMode === field ? (
-          <TextInput
-            style={styles.detailValue}
-            value={editedUser[field] || detailsVisible[field]}
-            onChangeText={(text) => handleEditChange(field, text)}
-            onBlur={() => setEditMode(null)} // Exit edit mode on blur
-          />
-        ) : (
-          <Text
-            style={styles.detailValue}
-            onPress={() => setEditMode(field)} // Enter edit mode on press
-          >
-            {detailsVisible[field]}
-          </Text>
-        )}
-        {editMode === field && (
-          // <Pressable
-          //   style={styles.detailButton}
-          //   onPress={() => setEditMode(null)}>
-            <Text style={styles.detailButtonText}>
-              {/* <Image___ /> */}
-            </Text>
-          // </Pressable>
-        )}
-      </View>
-    </View>
-  );
-
-=======
   /**
    * Builds a row in the table for a user.
    * 
@@ -197,7 +153,6 @@ export default function User() {
    * @param {number} index - The index of the user in the list.
    * @returns {JSX.Element} - The row component for the user.
    */
->>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
   const addRow = (user, index) => (
     <View key={index} style={styles.row}>
       <Pressable style={({ pressed }) => [styles.cell, { width: "13%" }, pressed && { opacity: 0.5 }]}>
@@ -247,7 +202,7 @@ export default function User() {
         </View>
       </View>
 
-      {/* View table headers*/}
+      {/* View table headers */}
       <View style={styles.header}>
         <Text style={[styles.textheader, { width: "13%" }]}>First Name</Text>
         <Text style={[styles.textheader, { width: "13%" }]}>Last Name</Text>
@@ -257,7 +212,7 @@ export default function User() {
         <Text style={[styles.textheader, { width: "13%" }]}>Action</Text>
       </View>
 
-      {/* View table data*/}
+      {/* View table data */}
       <ScrollView>
         {users_display}
       </ScrollView>

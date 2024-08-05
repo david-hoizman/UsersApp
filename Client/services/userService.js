@@ -1,12 +1,7 @@
 import axios from 'axios';
 
-<<<<<<< HEAD
-const IP = '192.168.33.13';
-// const IP = '192.168.1.22';
-=======
-const IP = '192.168.33.12';
+const IP = '192.168.1.22'; // ניתן לשנות לפי הצורך
 export const API_URL = `http://${IP}:3000/users`;
->>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
 
 /**
  * Fetches the list of users from the API.
@@ -50,13 +45,6 @@ export const addUser = async (user) => {
   }
 };
 
-<<<<<<< HEAD
-
-// פונקציה לעדכון משתמש קיים
-export const updateUser = async (id, updatedData) => {
-  try {
-    const response = await axios.put(`${API_URL}/${id}`, updatedData);
-=======
 /**
  * Updates an existing user in the API.
  * 
@@ -75,7 +63,6 @@ export const updateUser = async (id, updatedData) => {
 export const updateUser = async (id, updatedUser) => {
   try {
     const response = await axios.put(`${API_URL}/${id}`, updatedUser);
->>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
     return response.data;
   } catch (error) {
     console.error('Error updating user:', error);
@@ -83,10 +70,6 @@ export const updateUser = async (id, updatedUser) => {
   }
 };
 
-<<<<<<< HEAD
-
-// פונקציה למחיקת משתמש
-=======
 /**
  * Deletes a user from the API.
  * 
@@ -96,7 +79,6 @@ export const updateUser = async (id, updatedUser) => {
  * @returns {Promise<void>} A promise that resolves when the user has been deleted.
  * @throws {Error} Throws an error if the request fails.
  */
->>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
 export const deleteUser = async (id) => {
   try {
     await axios.delete(`${API_URL}/${id}`);

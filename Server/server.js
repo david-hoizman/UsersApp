@@ -29,7 +29,7 @@ db.serialize(() => {
   });
 });
 
-// Routes
+// Route to get all users
 app.get('/users', (req, res) => {
   db.all('SELECT * FROM users', [], (err, rows) => {
     if (err) {
@@ -40,6 +40,7 @@ app.get('/users', (req, res) => {
   });
 });
 
+// Route to add a new user
 app.post('/users', (req, res) => {
   const { firstName, lastName, email, phoneNumber, role } = req.body;
   const sql = `INSERT INTO users (firstName, lastName, email, phoneNumber, role)
@@ -53,7 +54,6 @@ app.post('/users', (req, res) => {
   });
 });
 
-<<<<<<< HEAD
 // Route to update a user
 app.put('/users/:id', (req, res) => {
   const { id } = req.params;
@@ -67,21 +67,9 @@ app.put('/users/:id', (req, res) => {
   // Execute the SQL query
   db.run(sql, [firstName, lastName, email, phoneNumber, role, id], function (err) {
     if (err) {
-      console.log(err);
-      return res.status(400).json({ error: err.message });
-    }
-    // Check if any rows were affected
-=======
-app.put('/users/:id', (req, res) => {
-  const { id } = req.params;
-  const { firstName, lastName, email, phoneNumber, role } = req.body;
-  const sql = `UPDATE users SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, role = ? WHERE id = ?`;
-  db.run(sql, [firstName, lastName, email, phoneNumber, role, id], function (err) {
-    if (err) {
       console.error('Error updating user:', err.message);
       return res.status(400).json({ error: err.message });
     }
->>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
     if (this.changes === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -89,10 +77,7 @@ app.put('/users/:id', (req, res) => {
   });
 });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 147c3fb4f66ac2e8232acdb9d614714b7ed0e036
+// Route to delete a user
 app.delete('/users/:id', (req, res) => {
   const { id } = req.params;
   const sql = `DELETE FROM users WHERE id = ?`;
