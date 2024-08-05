@@ -20,6 +20,7 @@ import DeleteUser from './DeleteUser';
  *   <User />
  * )
  */
+
 export default function User() {
   const [users, setUsers] = useState([]);
   const [isEditShow, setIsEditShow] = useState(false);
@@ -59,58 +60,6 @@ export default function User() {
     }
   };
 
-  /**
-   * Updates an existing user in the API.
-   * 
-   * @async
-   * @function
-   * @param {string} id - The ID of the user to be updated.
-   * @param {Object} updatedData - The updated user data.
-   * @returns {Promise<Object>} A promise that resolves to the updated user object.
-   * @throws {Error} Throws an error if the request fails.
-   */
-  const updateUser = async (id, updatedData) => {
-    try {
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update user');
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error updating user:', error);
-      throw error;
-    }
-  };
-
-  /**
-   * Deletes a user from the API.
-   * 
-   * @async
-   * @function
-   * @param {string} id - The ID of the user to be deleted.
-   * @returns {Promise<void>}
-   * @throws {Error} Throws an error if the request fails.
-   */
-  const deleteUser = async (id) => {
-    try {
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete user');
-      }
-      fetchUsers();
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
-  };
 
   /**
    * Handles the edit action for a user.
